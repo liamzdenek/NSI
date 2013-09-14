@@ -110,7 +110,7 @@ func CaptionDumpToCSV(in *Captions, config *Config) string {
 		if config.OptGlobalOutputToExcelCSV {
 			s = s + "\"" + caption.CaptionNumber + "\","
 			if in.SubsetOf != nil {
-				s = s + "\"" + strconv.Itoa(index) + "\","
+				s = s + "\"" + strconv.Itoa(index+1) + "\","
 			}
 			s = s + "\"" + caption.StartTime + "\"," +
 				"\"" + caption.EndTime + "\"," +
@@ -143,7 +143,7 @@ func CaptionDumpToHTMLTable(in *Captions, config *Config) string {
 		s = s + "<tr>"
 		if in.SubsetOf != nil {
 			s = s + "<td><a href='#unfilt_" + caption.CaptionNumber + "'>" + caption.CaptionNumber + "</a></td>"
-			s = s + "<td>" + strconv.Itoa(index) + "</td>"
+			s = s + "<td>" + strconv.Itoa(index+1) + "</td>"
 		} else {
 			s = s + "<td id='unfilt_" + caption.CaptionNumber + "'>" + caption.CaptionNumber + "</td>"
 		}
