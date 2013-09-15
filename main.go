@@ -65,7 +65,7 @@ func Upload(res http.ResponseWriter, req *http.Request) {
 		" - " + Checkbox(req, "opt_global_output_to_excel_csv") + " Excel Compatible CSV?<br/>" +
 		Checkbox(req, "opt_global_alphabetize") + " Alphabetize? <br/>" +
 		"<h3>Non-Speech Options</h3>" +
-		Checkbox(req, "opt_sds_include_music_notes") + " Include captions that contain musical notes<br/>" +
+		Checkbox(req, "opt_sds_include_music_notes") + " Include captions that contain musical notes (any of the following: "+strings.Join(NOTECHARS, ", ")+")<br/>" +
 		Checkbox(req, "opt_sds_exclude_lowercase") + " Exclude captions that are not entirely uppercase<br/>" +
 		Checkbox(req, "opt_sds_exclude_numeric") + " Exclude captions that do not contain any letters<br/>" +
 		"<input type='submit'>" +

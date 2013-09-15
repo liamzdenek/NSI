@@ -6,6 +6,14 @@ import (
 	"strconv"
 )
 
+var NOTECHARS []string = []string{"&#9833;", // quarter note
+				"&#9834;", //eighth note
+				"&#9835;", //single bar note
+				"&#9836;", //double bar note
+				"&#9837;", // flat note
+				"&#9838;", // natural note
+				"&#9839;"} // sharp note
+
 type Config struct {
 	OptGlobalRemoveNewlines bool
 	OptGlobalOutputToCSV bool
@@ -114,14 +122,7 @@ func (c *Captions) FindSoundDescriptions(config *Config) *Captions {
 		}
 
 		if config.OptSdsIncludeMusicNotes {
-			note_chars := []string{"&#9833;", // quarter note
-				"&#9834;", //eighth note
-				"&#9835;", //single bar note
-				"&#9836;", //double bar note
-				"&#9837;", // flat note
-				"&#9838;", // natural note
-				"&#9839;"} // sharp note
-			for _, note := range note_chars {
+						for _, note := range NOTECHARS {
 				if strings.Contains(t, note) {
 					notes = append(notes, "Sound Description contains a music note")
 					do_append = true
