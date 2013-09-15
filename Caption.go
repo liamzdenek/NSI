@@ -20,6 +20,9 @@ type Config struct {
 	OptGlobalOutputToExcelCSV bool
 	OptGlobalAlphabetize bool
 
+	OptSave bool
+	OptSaveFilename string
+
 	OptSdsIncludeMusicNotes bool
 	OptSdsExcludeLowercase bool
 	OptSdsExcludeNumeric bool
