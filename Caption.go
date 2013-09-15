@@ -52,6 +52,8 @@ func NewCaptions(s string, config *Config) (*Captions, error) {
 	captions := make([]*Caption, 0)
 
 	newl := "\r\n"
+	s = strings.Trim(s, newl);
+
 	parts := strings.SplitN(s, newl+newl, -1)
 
 	if len(parts) == 0 {
