@@ -26,6 +26,8 @@ type Config struct {
 	OptSdsIncludeMusicNotes bool
 	OptSdsExcludeLowercase bool
 	OptSdsExcludeNumeric bool
+	
+	IsSearch bool
 }
 
 type Caption struct {
@@ -34,6 +36,7 @@ type Caption struct {
 	CaptionNumber string
 	Text          string
 	Notes         []string
+	Parent *Captions
 }
 
 func NewCaption(s, newl string, config *Config) (*Caption, bool) {
@@ -56,7 +59,9 @@ func NewCaption(s, newl string, config *Config) (*Caption, bool) {
 type Captions struct {
 	Captions []*Caption
 	Raw      string
+	Name string
 	SubsetOf *Captions
+	Parents []*Captions
 }
 
 func NewCaptions(s string, config *Config) (*Captions, error) {
@@ -72,14 +77,26 @@ func NewCaptions(s string, config *Config) (*Captions, error) {
 		parts = strings.SplitN(s, newl+newl, -1)
 	}
 
+	caps := &Captions{Raw: s};
 	for index, caption := range parts {
 		c, err := NewCaption(caption, newl, config)
 		if err != false {
 			return nil, errors.New("There was an error parsing caption #"+strconv.Itoa(index+1)+"; this is probably an encoding error or a malformed caption")
 		}
+		c.Parent = caps
 		captions = append(captions, c)
 	}
-	return &Captions{Captions: captions, Raw: s}, nil
+	caps.Captions = captions
+	return caps, nil
+}
+
+func CaptionsMerge(a *Captions, b *Captions) *Captions {
+	return &Captions{
+		Captions: append(a.Captions, b.Captions...),
+		Raw: "",
+		SubsetOf: nil,
+		Parents: append(append([]*Captions{a, b}, a.Parents...), b.Parents...),
+	}
 }
 
 func (c *Captions) FindSpeakerIDs() *Captions {
@@ -135,16 +152,33 @@ func (c *Captions) FindSoundDescriptions(config *Config) *Captions {
 		}
 
 		if do_append {
-			sds = append(sds, &Caption{
-				StartTime:     caption.StartTime,
-				EndTime:       caption.EndTime,
-				CaptionNumber: caption.CaptionNumber,
-				Text:          caption.Text,
-				Notes:         notes,
-			})
+			caption.Notes = notes
+			sds = append(sds, caption)
 		}
 	}
 	return &Captions{Captions: sds, SubsetOf: c, Raw: c.Raw}
+}
+
+/*
+implement basic search
+*/
+func (c *Captions) Reduce(query string) *Captions {
+	new_captions := []*Caption{}
+	for _,caption := range c.Captions {
+		does_match := strings.Contains(
+			strings.ToLower(caption.Text),
+			query,
+		)
+		if does_match {
+			new_captions = append(new_captions, caption)
+		}
+	}
+	return &Captions{
+		Captions: new_captions,
+		Raw: "",
+		SubsetOf: c,
+		Parents: []*Captions{c},
+	}
 }
 
 /*
